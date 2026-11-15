@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WoH-Rechner – Last War</title>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{--b1:#16356a;--b2:#0c2347;--panel:#1f406f;--line:#0a1a34;--lab:#b9c8e6;--val:#fff;--inp:#12284a;--inpt:#fff;--pill:#d9430f;--pillb:#6e1f06;--y:#ffd23f;--yt:#14305c;--sep:rgba(255,255,255,.18);--cardt:#14305c;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root[data-theme="light"]{--b1:#8ccdf2;--b2:#4f9fd8;--panel:#fff4d6;--line:#3a2a1a;--lab:#6b5a3c;--val:#2b2118;--inp:#fff;--inpt:#2b2118;--sep:rgba(0,0,0,.18)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100%;background:linear-gradient(180deg,var(--b1),var(--b2));background-attachment:fixed;color:var(--val);font-family:"Nunito","Trebuchet MS",Arial,sans-serif;font-weight:800;font-size:14px}
+.wrap{max-width:860px;margin:0 auto;padding:10px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+h1{margin:0;font:400 30px "Lilita One","Trebuchet MS",sans-serif;color:#fff;text-shadow:0 3px 0 var(--line),2px 2px 0 var(--line),-2px 2px 0 var(--line)}
+.ctl{display:flex;gap:6px;align-items:center}
+.btn{font:400 15px "Lilita One","Trebuchet MS",sans-serif;cursor:pointer;color:var(--yt);background:var(--y);border:3px solid var(--line);border-radius:11px;padding:4px 11px;box-shadow:0 3px 0 var(--line)}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.btn.g{background:#6fd35f}.btn.r{background:#ff6b6b}.btn.s{font-size:13px;padding:2px 8px}
+select,input{font:inherit;font-size:14px;color:var(--inpt);background:var(--inp);border:2px solid var(--line);border-radius:9px;padding:4px 6px;min-width:0;width:100%}
+.ctl select{width:auto}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.card{border:3px solid var(--line);border-radius:14px;box-shadow:0 3px 0 var(--line);padding:5px 9px;color:var(--cardt)}
+.card small{display:block;font-size:11px;line-height:1.2}.card b{font:400 20px "Lilita One","Trebuchet MS",sans-serif}
+.c1{background:#7ad96a}.c2{background:#5ab8ff}.c3{background:#ffd23f}.c4{background:#ff6b6b}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:8px}
+.tab{flex:1 0 auto;font:400 16px "Lilita One","Trebuchet MS",sans-serif;cursor:pointer;color:var(--lab);background:var(--panel);border:3px solid var(--line);border-radius:12px;padding:5px 10px;white-space:nowrap}
+.tab.on{background:var(--y);color:var(--yt);box-shadow:0 3px 0 var(--line)}
+.panel{background:var(--panel);border:4px solid var(--line);border-radius:18px;box-shadow:0 4px 0 var(--line);padding:10px 12px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;min-height:24px}
+.chip{background:var(--pill);color:#fff;border:2px solid var(--pillb);border-radius:9px;padding:1px 8px;font-size:13px}
+.chip.hp{background:#3fae3a;border-color:#1d5a1a}
+.gh{display:flex;align-items:center;gap:8px;margin:10px 0 4px}
+.tag{display:inline-block;padding:0 9px;border:2px solid var(--line);border-radius:8px;color:#fff;font-size:13px}
+.UR{background:#e8a317}.SSR{background:#9a4fc9}.SR{background:#2a7fd6}
+.cols,.row{display:grid;grid-template-columns:minmax(80px,1.3fr) 84px 58px 58px 120px 104px;gap:5px;align-items:center}
+.cols{color:var(--lab);font-size:11px;font-weight:600;padding:0 2px}
+.row{padding:3px 0;border-top:2px dashed var(--sep)}
+.bo{text-align:right;color:var(--val)}
+.acts{display:flex;gap:3px;justify-content:flex-end}
+.cfg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+label{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--lab)}
+.note{font-size:12px;color:var(--lab);font-weight:600;margin-top:8px}
+.irow{display:grid;grid-template-columns:26px 70px 84px 1fr;gap:5px;align-items:center;padding:3px 0;border-top:2px dashed var(--sep)}
+@media(max-width:560px){.cards{grid-template-columns:1fr 1fr}.cols{display:none}.row{grid-template-columns:1fr 1fr 1fr 1fr;padding:6px 0}.row .nm{grid-column:1/-1}.row .bo{grid-column:span 2;text-align:left}.row .acts{grid-column:span 2}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="top"><h1 id="ttl"></h1><div class="ctl"><select id="lang"><option value="de">DE</option><option value="en">EN</option></select><button class="btn" id="theme">◐</button><button class="btn" id="reset">↺</button></div></div>
+<div class="cards" id="cards"></div>
+<div class="tabs" id="tabs"></div>
+<div class="panel" id="body"></div>
+</div>
+<script>
+var T={de:{ttl:"WoH-Rechner",set:"Einstellungen",c1:"HP gesamt (alle Helden)",c2:"HP bei Ziel-Level",c3:"Shards bis Ziel",c4:"Refund-Pool",name:"Name",stat:"Stat",lvl:"Level",tgt:"Ziel",hp:"HP",up:"↑UR",upt:"Auf UR upgraden: Shards werden erstattet, Level startet bei 0",dn:"↓SSR",dnt:"Upgrade rückgängig machen: Level und Shards wie vorher",del:"✕",sure:"Sicher?",seas:"Saison-Upgrade",none:"Keine Helden",clr:"Refund-Pool leeren",cost:"Shards pro Level",ur:"UR-Bonus je Stufe (%)",ssr:"SSR-Bonus je Stufe (%)",sr:"SR-Bonus je Stufe (%)",hpur:"HP pro Level (UR)",hpssr:"HP pro Level (SSR)",hpsr:"HP pro Level (SR)",start:"Faktor ×1 bis Level",step:"Faktor steigt alle … Level",ncfg:"HP-Formel: HP pro Level × Faktor je Level. Faktor ×1 bis Level 200, danach ×2 für 201–300, ×3 für 301–400 usw. (aus einem gemessenen Spielstand abgeleitet, 637.900 HP). Prozent-Bonus: eine Stufe je 50 Level bis Level 200, danach eine Stufe je 100 Level (aus einem WoH-Screenshot abgeleitet). Bei vielen Helden steht der Stat noch auf „Sonstiges“.",ATK:"Angriff",DEF:"Verteidigung",HP:"Leben",TL:"Truppenlast",OTH:"Sonstiges",restore:"↶ Wiederherstellen: "},
+en:{ttl:"WoH Calc",set:"Settings",c1:"Total HP (all heroes)",c2:"HP at target level",c3:"Shards to target",c4:"Refund pool",name:"Name",stat:"Stat",lvl:"Level",tgt:"Target",hp:"HP",up:"↑UR",upt:"Promote to UR: shards are refunded, level restarts at 0",dn:"↓SSR",dnt:"Undo promotion: level and shards as before",del:"✕",sure:"Sure?",seas:"Seasonal promotion",none:"No heroes",clr:"Clear refund pool",cost:"Shards per level",ur:"UR bonus per step (%)",ssr:"SSR bonus per step (%)",sr:"SR bonus per step (%)",hpur:"HP per level (UR)",hpssr:"HP per level (SSR)",hpsr:"HP per level (SR)",start:"Multiplier ×1 up to level",step:"Multiplier rises every … levels",ncfg:"HP formula: HP per level × multiplier per level. ×1 up to level 200, then ×2 for 201–300, ×3 for 301–400 etc. (derived from one measured account, 637,900 HP). Percent bonus: one step per 50 levels up to level 200, then one step per 100 levels (derived from a WoH screenshot). Many heroes still have the stat set to Other.",ATK:"Attack",DEF:"Defense",HP:"HP",TL:"Troop Load",OTH:"Other",restore:"↶ Restore: "}};
+var TYPES=[["Tank","🛡️"],["Aircraft","✈️"],["Missile","🚀"]],RARS=["UR","SSR","SR"],STATS=["ATK","DEF","HP","TL","OTH"];
+var CFG0={cost:10,UR:0.5,SSR:0.25,SR:0.1,hpUR:200,hpSSR:100,hpSR:50,start:200,step:100};
+function def(){var R=[["Mason","Tank","SSR","ATK",1],["Violet","Tank","SSR","HP",2],["Scarlett","Tank","SSR","HP",3],["Sarah","Aircraft","SSR","DEF",4],["Venom","Missile","SSR","DEF",5],["Braz","Missile","SSR","ATK",6],["Murphy","Tank","UR"],["Kimberly","Tank","UR"],["Williams","Tank","UR"],["Marshall","Tank","UR"],["Stetmann","Tank","UR"],["DVA","Aircraft","UR"],["Carlie","Aircraft","UR"],["Lucius","Aircraft","UR"],["Schuyler","Aircraft","UR"],["Morrison","Aircraft","UR"],["Tesla","Missile","UR"],["Swift","Missile","UR"],["Fiona","Missile","UR"],["McGregor","Missile","UR"],["Adam","Missile","UR"],["Monica","Tank","SSR"],["Richard","Tank","SSR"],["Farhad","Tank","SSR"],["Cage","Aircraft","SSR"],["Maxwell","Aircraft","SSR"],["Elsa","Missile","SSR"],["Gump","Tank","SR"],["Loki","Tank","SR"],["Ambolt","Aircraft","SR"],["Kane","Missile","SR"]];
+return{lang:"de",theme:"dark",tab:"Tank",pool:0,cfg:Object.assign({},CFG0),nid:100,heroes:R.map(function(r,i){return{id:i+1,name:r[0],type:r[1],rar:r[2],stat:r[3]||"OTH",prom:r[4]||0,lvl:0,tgt:0}})}}
+var S=def();
+try{var sv=localStorage.getItem("woh-calc-v4");if(sv){var o=JSON.parse(sv);if(o&&o.heroes){S=o;S.cfg=Object.assign({},CFG0,S.cfg)}}}catch(e){}
+if(S.tab!=="set"&&S.tab!=="imp"&&!TYPES.some(function(x){return x[0]===S.tab}))S.tab="Tank";
+function save(){try{localStorage.setItem("woh-calc-v4",JSON.stringify(S))}catch(e){}}
+function t(k){return T[S.lang][k]||k}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function n(v){v=parseFloat(v);return isNaN(v)||v<0?0:v}
+function fmt(x){return (Math.round(x*100)/100).toLocaleString(S.lang==="de"?"de-DE":"en-US")}
+function bonus(h){var l=h.lvl,a=S.cfg.start,st=Math.max(1,S.cfg.step);return (Math.min(Math.floor(l/50),Math.floor(a/50))+Math.floor(Math.max(0,l-a)/st))*S.cfg[h.rar]}
+function wlv(l){var tot=0,prev=0,m=1,hi=S.cfg.start,st=Math.max(1,S.cfg.step);while(prev<l){tot+=(Math.min(l,hi)-prev)*m;prev=hi;hi+=st;m++}return tot}
+function hp(h,l){return S.cfg["hp"+h.rar]*wlv(l)}
+function opts(a,sel,l){return a.map(function(x){return '<option value="'+x+'"'+(x===sel?" selected":"")+'>'+(l?t(x):x)+'</option>'}).join("")}
+function aggr(ty){var a={};S.heroes.forEach(function(h){if(h.type===ty){a[h.stat]=(a[h.stat]||0)+bonus(h)}});return a}
+function typeHp(ty){return S.heroes.filter(function(h){return h.type===ty}).reduce(function(s,h){return s+hp(h,h.lvl)},0)}
+function chips(ty){var a=aggr(ty);return '<span class="chip hp">+'+fmt(typeHp(ty))+' '+t("hp")+'</span>'+STATS.filter(function(s){return a[s]}).map(function(s){return '<span class="chip">+'+fmt(a[s])+' % '+t(s)+'</span>'}).join("")}
+function typeView(ty){
+ var hs=S.heroes.filter(function(h){return h.type===ty});
+ var out='<div class="chips">'+chips(ty)+'</div><div class="cols"><span>'+t("name")+'</span><span>'+t("stat")+'</span><span>'+t("lvl")+'</span><span>'+t("tgt")+'</span><span class="bo">'+t("hp")+'</span><span></span></div>';
+ [["P",hs.filter(function(h){return h.prom})]].concat(RARS.map(function(r){return [r,hs.filter(function(h){return !h.prom&&h.rar===r})]})).forEach(function(G){
+  var g=G[1];if(!g.length)return;
+  out+='<div class="gh">'+(G[0]==="P"?'<span class="tag" style="background:#d9430f">⭐ '+t("seas")+'</span>':'<span class="tag '+G[0]+'">'+G[0]+'</span>')+'</div>'+g.map(function(h){
+   return '<div class="row" data-id="'+h.id+'"><input class="nm" data-f="name" value="'+esc(h.name)+'"><select data-f="stat">'+opts(STATS,h.stat,1)+'</select>'+
+   '<input type="number" min="0" data-f="lvl" value="'+h.lvl+'" title="'+t("lvl")+'"><input type="number" min="0" data-f="tgt" value="'+h.tgt+'" title="'+t("tgt")+'">'+
+   '<span class="bo"><span class="tag '+h.rar+'">'+h.rar+'</span> +'+fmt(hp(h,h.lvl))+'</span><span class="acts">'+(h.rar==="SSR"&&h.prom?'<button class="btn g s" data-act="up" title="'+t("upt")+'">'+t("up")+(typeof h.prom==="number"?' S'+h.prom:'')+'</button>':'')+(h.rar==="UR"&&h.prom?'<button class="btn s" data-act="down" title="'+t("dnt")+'">'+t("dn")+'</button>':'')+'<button class="btn r s" data-act="del">'+t("del")+'</button></span></div>'}).join("");
+ });
+ return out+(hs.length?'':'<div class="note">'+t("none")+'</div>')+(S.lastDel?'<div style="margin-top:10px"><button class="btn s" data-act="restore">'+t("restore")+esc(S.lastDel.name)+'</button></div>':'');
+}
+function setView(){
+ var L={cost:"cost",UR:"ur",SSR:"ssr",SR:"sr",hpUR:"hpur",hpSSR:"hpssr",hpSR:"hpsr",start:"start",step:"step"};
+ return '<div class="cfg">'+Object.keys(L).map(function(k){return '<label>'+t(L[k])+'<input type="number" min="0" step="any" data-cfg="'+k+'" value="'+S.cfg[k]+'"></label>'}).join("")+'</div><div style="margin-top:10px"><button class="btn s" data-act="clr">'+t("clr")+'</button></div><div class="note">'+t("ncfg")+'</div>';
+}
+function impView(){
+ var ty=S.impType||"Tank",de=S.lang==="de",hs=S.heroes.filter(function(h){return h.type===ty}),rows=S.impRows||[];
+ var o='<label>'+(de?'Heldentyp (Reiter in der WoH)':'Hero type (WoH tab)')+'<select data-imptype="1">'+TYPES.map(function(x){return '<option value="'+x[0]+'"'+(x[0]===ty?" selected":"")+'>'+x[1]+' '+x[0]+'</option>'}).join("")+'</select></label>';
+ o+='<label style="margin-top:8px">'+(de?'Screenshots (von oben nach unten)':'Screenshots (top to bottom)')+'<input type="file" id="imgs" accept="image/*" multiple></label>';
+ o+='<div style="margin-top:8px"><button class="btn g s" data-act="analyze">'+(de?'Auswerten':'Analyze')+'</button></div><div class="note">'+(S.impMsg||"")+'</div>';
+ if(rows.length){
+  o+=rows.map(function(r,i){return '<div class="irow"><span>'+(i+1)+'</span><input type="number" min="0" data-imp="lvl" data-i="'+i+'" value="'+r.lvl+'"><select data-imp="stat" data-i="'+i+'">'+opts(STATS,r.stat,1)+'</select><select data-imp="hero" data-i="'+i+'"><option value="">–</option>'+hs.map(function(h){return '<option value="'+h.id+'"'+(String(r.hero)===String(h.id)?" selected":"")+'>'+esc(h.name)+'</option>'}).join("")+'</select></div>'}).join("");
+  o+='<div style="margin-top:10px"><button class="btn g s" data-act="apply">'+(de?"Übernehmen":"Apply")+'</button></div>';
+ }
+ return o+'<div class="note">'+(de?"Die Heldenzuordnung pro Platz wird gespeichert und beim nächsten Mal vorausgewählt. Bitte immer kontrollieren, bevor du übernimmst.":"The hero assignment per slot is remembered and preselected next time. Always check before applying.")+'</div>';
+}
+async function analyze(){
+ var ty=S.impType||"Tank",de=S.lang==="de",inp=document.getElementById("imgs"),files=inp&&inp.files?Array.from(inp.files):[];
+ if(!files.length){S.impMsg=de?"Bitte zuerst Screenshots auswählen.":"Please choose screenshots first.";return render()}
+ S.impMsg=de?"Wird ausgewertet … (kann bis zu einer Minute dauern)":"Analyzing … (can take up to a minute)";render();
+ try{
+  var sample=typeof claude!=="undefined"?await claude.use("sample"):null;if(!sample)throw{code:"na"};
+  var lim=await sample.limits();if(!lim||!lim.images)throw{code:"na"};
+  var res=await sample.json('These are screenshots of the "Wall of Honor" in the mobile game Last War, tab "'+ty+'". Each card shows a hero portrait, a level number inside a hexagon below it, a label such as "Missile Hero HP" and a line "Boost:+x%". The screenshots are consecutive scroll positions and may overlap, so the same card can appear in several images. Return every distinct card exactly once, in reading order (top to bottom, left to right). Recognise repeated cards by portrait and level. Answer ONLY with a JSON array: [{"level":number or null,"stat":"HP"|"Attack"|"Defense","boost":number or null}]. Use null for anything you cannot read clearly; never guess a number.',{images:files});
+  var sl=(S.slots&&S.slots[ty])||[];
+  S.impRows=(Array.isArray(res)?res:[]).map(function(c,i){var st=String(c.stat||"").toLowerCase();return{lvl:Math.floor(n(c.level)),stat:st.indexOf("att")===0?"ATK":st.indexOf("def")===0?"DEF":st.indexOf("hp")===0?"HP":"OTH",hero:sl[i]||""}});
+  S.impMsg=(de?"Erkannt: ":"Detected: ")+S.impRows.length+(de?" Karten. Bitte prüfen.":" cards. Please check.");
+ }catch(e){var c=e&&e.code;S.impRows=[];S.impMsg=c==="not_granted"?(de?"Zugriff abgelehnt.":"Access declined."):c==="rate_limited"?(de?"Zu viele Anfragen, bitte kurz warten.":"Too many requests, please wait."):c==="na"?(de?"Auswertung nur in der veröffentlichten Seite verfügbar.":"Analysis is only available in the published page."):(de?"Auswertung fehlgeschlagen.":"Analysis failed.")}
+ render();
+}
+function render(){
+ document.documentElement.setAttribute("data-theme",S.theme);document.documentElement.lang=S.lang;
+ document.getElementById("lang").value=S.lang;document.getElementById("ttl").textContent=t("ttl");
+ var hpAll=0,hpTgt=0,need=0;S.heroes.forEach(function(h){hpAll+=hp(h,h.lvl);hpTgt+=hp(h,Math.max(h.lvl,h.tgt));need+=Math.max(0,h.tgt-h.lvl)*S.cfg.cost});
+ var cs=[[hpAll,"c1"],[hpTgt,"c2"],[need,"c3"],[S.pool,"c4"]];
+ document.getElementById("cards").innerHTML=cs.map(function(c){return '<div class="card '+c[1]+'"><small>'+t(c[1])+'</small><b>'+fmt(c[0])+'</b></div>'}).join("");
+ var tabs=TYPES.map(function(x){return [x[0],x[1]+' '+x[0]]}).concat([["imp","📷 Import"],["set","⚙️ "+t("set")]]);
+ document.getElementById("tabs").innerHTML=tabs.map(function(x){return '<button class="tab'+(S.tab===x[0]?" on":"")+'" data-tab="'+x[0]+'">'+x[1]+'</button>'}).join("");
+ document.getElementById("body").innerHTML=S.tab==="set"?setView():S.tab==="imp"?impView():typeView(S.tab);
+ save();
+}
+document.addEventListener("click",function(e){
+ var b=e.target.closest("button");if(!b)return;
+ if(b.id==="theme"){S.theme=S.theme==="dark"?"light":"dark";return render()}
+ if(b.id==="reset"){var tb=S.tab,lg=S.lang,th=S.theme;S=def();S.tab=tb;S.lang=lg;S.theme=th;return render()}
+ if(b.dataset.tab){S.tab=b.dataset.tab;return render()}
+ if(b.dataset.act==="clr"){S.pool=0;return render()}
+ if(b.dataset.act==="restore"&&S.lastDel){S.heroes.push(S.lastDel);S.tab=S.lastDel.type;S.lastDel=null;return render()}
+ if(b.dataset.act==="analyze"){analyze();return}
+ if(b.dataset.act==="apply"){var ty=S.impType||"Tank";S.slots=S.slots||{};S.slots[ty]=[];(S.impRows||[]).forEach(function(rw,i){S.slots[ty][i]=rw.hero||null;var hh=S.heroes.filter(function(x){return String(x.id)===String(rw.hero)})[0];if(hh){hh.lvl=rw.lvl;hh.stat=rw.stat}});S.impRows=[];S.impMsg="";S.tab=ty;return render()}
+ var r=b.closest(".row");if(!r)return;
+ var h=S.heroes.filter(function(x){return x.id==r.dataset.id})[0];
+ if(b.dataset.act==="del"){if(!b.dataset.arm){b.dataset.arm=1;b.textContent=t("sure");setTimeout(render,3000);return}S.lastDel=h;S.heroes=S.heroes.filter(function(x){return x!==h})}
+ if(b.dataset.act==="up"){h.prevLvl=h.lvl;h.prevRef=h.lvl*S.cfg.cost;S.pool+=h.prevRef;h.rar="UR";h.lvl=0}
+ if(b.dataset.act==="down"){S.pool=Math.max(0,S.pool-(h.prevRef||0));h.lvl=h.prevLvl||0;h.rar="SSR";delete h.prevLvl;delete h.prevRef}
+ render();
+});
+document.addEventListener("change",function(e){
+ var el=e.target;
+ if(el.id==="lang"){S.lang=el.value;return render()}
+ if(el.dataset.cfg){S.cfg[el.dataset.cfg]=n(el.value);return render()}
+ if(el.dataset.imptype){S.impType=el.value;S.impRows=[];S.impMsg="";return render()}
+ if(el.dataset.imp){var rw=(S.impRows||[])[el.dataset.i],f2=el.dataset.imp;if(rw)rw[f2]=f2==="lvl"?Math.floor(n(el.value)):el.value;return}
+ var r=el.closest(".row");if(!r||!el.dataset.f)return;
+ var h=S.heroes.filter(function(x){return x.id==r.dataset.id})[0],f=el.dataset.f;
+ h[f]=(f==="lvl"||f==="tgt")?Math.floor(n(el.value)):el.value;render();
+});
+render();
+</script>
+</body>
+</html>
