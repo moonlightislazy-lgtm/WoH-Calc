@@ -44,7 +44,25 @@ select,input{font:inherit;font-size:14px;color:var(--inpt);background:var(--inp)
 label{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--lab)}
 .note{font-size:12px;color:var(--lab);font-weight:600;margin-top:8px}
 .irow{display:grid;grid-template-columns:26px 70px 84px 1fr;gap:5px;align-items:center;padding:3px 0;border-top:2px dashed var(--sep)}
-@media(max-width:560px){.cards{grid-template-columns:1fr 1fr}.cols{display:none}.row{grid-template-columns:1fr 1fr 1fr 1fr;padding:6px 0}.row .nm{grid-column:1/-1}.row .bo{grid-column:span 2;text-align:left}.row .acts{grid-column:span 2}}
+.f small{display:none}
+@media(max-width:560px){
+ .wrap{padding:8px}h1{font-size:24px}
+ body{font-size:15px}
+ select,input{font-size:16px;min-height:42px}
+ .btn{min-height:40px}.btn.s{font-size:14px;padding:4px 12px}
+ .cards{grid-template-columns:1fr 1fr;gap:6px}.card{padding:4px 8px}.card small{font-size:10px}.card b{font-size:17px}
+ .tabs{gap:5px}.tab{padding:6px 12px;font-size:15px}.tab:not(.on) .tt{display:none}
+ .panel{padding:8px}
+ .cols{display:none}
+ .row{grid-template-columns:1fr 1fr 1fr;gap:6px;background:rgba(0,0,0,.14);border:2px solid var(--line);border-radius:12px;padding:8px;margin-top:8px}
+ .row .nm{grid-column:1/-1}
+ .f small{display:block;font-size:11px}
+ .row .bo{grid-column:1/-1;text-align:left;font-size:15px}
+ .row .acts{grid-column:1/-1}.acts .r{margin-left:auto}
+ .irow{grid-template-columns:24px 1fr 1fr}.irow select[data-imp=hero]{grid-column:1/-1}
+ .cfg{grid-template-columns:1fr}
+}
+@media(pointer:coarse){select,input{min-height:40px}.btn{min-height:38px}}
 </style>
 </head>
 <body>
@@ -82,8 +100,8 @@ function typeView(ty){
  [["P",hs.filter(function(h){return h.prom})]].concat(RARS.map(function(r){return [r,hs.filter(function(h){return !h.prom&&h.rar===r})]})).forEach(function(G){
   var g=G[1];if(!g.length)return;
   out+='<div class="gh">'+(G[0]==="P"?'<span class="tag" style="background:#d9430f">⭐ '+t("seas")+'</span>':'<span class="tag '+G[0]+'">'+G[0]+'</span>')+'</div>'+g.map(function(h){
-   return '<div class="row" data-id="'+h.id+'"><input class="nm" data-f="name" value="'+esc(h.name)+'"><select data-f="stat">'+opts(STATS,h.stat,1)+'</select>'+
-   '<input type="number" min="0" data-f="lvl" value="'+h.lvl+'" title="'+t("lvl")+'"><input type="number" min="0" data-f="tgt" value="'+h.tgt+'" title="'+t("tgt")+'">'+
+   return '<div class="row" data-id="'+h.id+'"><input class="nm" data-f="name" value="'+esc(h.name)+'"><label class="f"><small>'+t("stat")+'</small><select data-f="stat">'+opts(STATS,h.stat,1)+'</select></label>'+
+   '<label class="f"><small>'+t("lvl")+'</small><input type="number" min="0" inputmode="numeric" data-f="lvl" value="'+h.lvl+'"></label><label class="f"><small>'+t("tgt")+'</small><input type="number" min="0" inputmode="numeric" data-f="tgt" value="'+h.tgt+'"></label>'+
    '<span class="bo"><span class="tag '+h.rar+'">'+h.rar+'</span> +'+fmt(hp(h,h.lvl))+'</span><span class="acts">'+(h.rar==="SSR"&&h.prom?'<button class="btn g s" data-act="up" title="'+t("upt")+'">'+t("up")+(typeof h.prom==="number"?' S'+h.prom:'')+'</button>':'')+(h.rar==="UR"&&h.prom?'<button class="btn s" data-act="down" title="'+t("dnt")+'">'+t("dn")+'</button>':'')+'<button class="btn r s" data-act="del">'+t("del")+'</button></span></div>'}).join("");
  });
  return out+(hs.length?'':'<div class="note">'+t("none")+'</div>')+(S.lastDel?'<div style="margin-top:10px"><button class="btn s" data-act="restore">'+t("restore")+esc(S.lastDel.name)+'</button></div>':'');
@@ -123,8 +141,8 @@ function render(){
  var hpAll=0,hpTgt=0,need=0;S.heroes.forEach(function(h){hpAll+=hp(h,h.lvl);hpTgt+=hp(h,Math.max(h.lvl,h.tgt));need+=Math.max(0,h.tgt-h.lvl)*S.cfg.cost});
  var cs=[[hpAll,"c1"],[hpTgt,"c2"],[need,"c3"],[S.pool,"c4"]];
  document.getElementById("cards").innerHTML=cs.map(function(c){return '<div class="card '+c[1]+'"><small>'+t(c[1])+'</small><b>'+fmt(c[0])+'</b></div>'}).join("");
- var tabs=TYPES.map(function(x){return [x[0],x[1]+' '+x[0]]}).concat([["imp","📷 Import"],["set","⚙️ "+t("set")]]);
- document.getElementById("tabs").innerHTML=tabs.map(function(x){return '<button class="tab'+(S.tab===x[0]?" on":"")+'" data-tab="'+x[0]+'">'+x[1]+'</button>'}).join("");
+ var tabs=TYPES.map(function(x){return [x[0],x[1],x[0]]}).concat([["imp","📷","Import"],["set","⚙️",t("set")]]);
+ document.getElementById("tabs").innerHTML=tabs.map(function(x){return '<button class="tab'+(S.tab===x[0]?" on":"")+'" data-tab="'+x[0]+'"><span>'+x[1]+'</span><span class="tt"> '+x[2]+'</span></button>'}).join("");
  document.getElementById("body").innerHTML=S.tab==="set"?setView():S.tab==="imp"?impView():typeView(S.tab);
  save();
 }
